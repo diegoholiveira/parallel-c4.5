@@ -16,6 +16,7 @@ def classify():
     samples = from_csv(samples)
 
     stats = []
+    evolution = {}
 
     for i in range(3):
         stats.append(
@@ -27,7 +28,7 @@ def classify():
                 i,
             )
         )
-        for p in [2, 4, 8]:
+        for p in [2, 4, 8, 16]:
             stats.append(
                 _get_stats_from_execution(
                     "parallel_" + str(p),
@@ -37,10 +38,15 @@ def classify():
                     i,
                 )
             )
+            evolution[p] = generator.display_timeline()
 
-    output = "stats_" + time.strftime("%Y%m%d-%H%M%S") + ".json"
-    with open(output, "w", encoding="utf-8") as f:
+    output_stats = "stats_" + time.strftime("%Y%m%d-%H%M%S") + ".json"
+    output_evolution = "evolution_" + time.strftime("%Y%m%d-%H%M%S") + ".json"
+
+    with open(output_stats, "w", encoding="utf-8") as f:
         json.dump(stats, f, ensure_ascii=False, indent=4)
+    with open(output_evolution, "w", encoding="utf-8") as f:
+        json.dump(evolution, f, ensure_ascii=False, indent=4)
 
 
 def _get_stats_from_execution(method, f, dataset, samples, i):
@@ -57,7 +63,6 @@ def _get_stats_from_execution(method, f, dataset, samples, i):
         "hits": hits,
         "failures": failures,
     }
-    print(stat)
     return stat
 
 

@@ -1,8 +1,24 @@
+from datetime import datetime
+
 from classifier.dist import Dist
 from classifier.node import Node
 
+_timeline = {}
+
+
+def timeline():
+    return _timeline
+
+
+def reset():
+    global _timeline
+    _timeline = {}
+
 
 def c45(choose_attribute_func, dataset, attributes, class_attr):
+    if len(attributes) not in _timeline:
+        _timeline[len(attributes)] = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+
     best, values = choose_attribute_func(dataset, attributes, class_attr)
 
     if best is None:
@@ -22,7 +38,12 @@ def c45(choose_attribute_func, dataset, attributes, class_attr):
 
         sub_attributes = [attr for attr in attributes if attr != best]
 
-        child = c45(choose_attribute_func, sub_dataset, sub_attributes, class_attr)
+        child = c45(
+            choose_attribute_func,
+            sub_dataset,
+            sub_attributes,
+            class_attr,
+        )
         if child:
             node.create_branch(value, child)
 
